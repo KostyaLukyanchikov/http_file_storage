@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+  web:
+    build: .
+    container_name: 'web'
+    stdin_open: true
+    tty: true
+    command: >
+      bash -c "sqlite3 -init db/init.sql db/database.db .quit
+      && uwsgi --http 0.0.0.0:5000 --master -p 1 --chdir=/app -w src.app:app"
+    volumes:
+      - ./db/:/app/db
+    ports:
+      - '5000:5000'
+    restart: unless-stopped
